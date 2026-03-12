@@ -62,6 +62,7 @@ export interface WorldState {
   agents: Agent[]
   events: WorldEvent[]
   createdAt: string
+  civState?: import('./civilization').CivState
 }
 
 export interface WorldConfig {

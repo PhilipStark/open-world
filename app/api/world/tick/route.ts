@@ -45,6 +45,7 @@ export async function POST(req: Request) {
       agents,
       events: [],
       createdAt: world.created_at,
+      civState: world.civ_state ?? undefined,
     }
 
     const map: Tile[][] = world.map as Tile[][]
@@ -83,8 +84,11 @@ export async function POST(req: Request) {
       )
     }
 
-    // Update world tick
-    await db.from('worlds').update({ tick: newState.tick }).eq('id', worldId)
+    // Update world tick + civ state
+    await db.from('worlds').update({
+      tick: newState.tick,
+      civ_state: newState.civState ?? {},
+    }).eq('id', worldId)
 
     return NextResponse.json({
       tick: newState.tick,

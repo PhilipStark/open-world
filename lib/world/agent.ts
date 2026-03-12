@@ -84,10 +84,20 @@ Respond with JSON only:
 export async function processAgentTick(
   agent: Agent,
   state: WorldState,
-  map: Tile[][]
+  map: Tile[][],
+  civState?: import('./civilization').CivState
 ): Promise<{ agent: Agent; decision: AgentDecision; event: string | null }> {
   const perception = buildPerception(agent, state, map)
-  const prompt = buildDecisionPrompt(agent, perception, state.tick)
+  
+  // Use civilization-aware prompt if civState available
+  let prompt: string
+  if (civState) {
+    const { buildAgentSystemPrompt } = await import('./civilization')
+    const systemContext = buildAgentSystemPrompt(agent, civState, state.tick)
+    prompt = systemContext + '\n\n' + buildDecisionPrompt(agent, perception, state.tick)
+  } else {
+    prompt = buildDecisionPrompt(agent, perception, state.tick)
+  }
   const decision = await agentDecide(prompt)
 
   let updatedAgent = { ...agent }

@@ -10,7 +10,8 @@ const WORLD_ID = process.env.NEXT_PUBLIC_WORLD_ID ?? ''
 const MAP_SIZE = parseInt(process.env.NEXT_PUBLIC_MAP_SIZE ?? '50')
 
 const EVENT_ICONS: Record<string, string> = {
-  speech: '💬', combat: '⚔️', trade: '🤝', death: '💀', meeting: '👋', action: '▶️',
+  speech: '💬', combat: '⚔️', trade: '🤝', death: '💀', meeting: '👋',
+  birth: '🌱', milestone: '🏛️', stage: '⚡', action: '▶️',
 }
 
 export default function WorldPage() {
@@ -22,6 +23,7 @@ export default function WorldPage() {
   const [ticking, setTicking] = useState(false)
   const [autoTick, setAutoTick] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [civStage, setCivStage] = useState('primitive')
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null)
   const feedRef = useRef<HTMLDivElement>(null)
 
@@ -35,7 +37,7 @@ export default function WorldPage() {
     fetch(`/api/world/state?worldId=${WORLD_ID}`)
       .then(r => r.json())
       .then(({ world, agents, events }) => {
-        if (world) { setTick(world.tick); setWorldName(world.name); setMap(world.map ?? []) }
+        if (world) { setTick(world.tick); setWorldName(world.name); setMap(world.map ?? []); if (world.civ_state?.stage) setCivStage(world.civ_state.stage) }
         setAgents((agents ?? []).map((a: any) => ({ ...a, worldId: a.world_id, createdAt: a.created_at })))
         setEvents((events ?? []).reverse().map((e: any) => ({ ...e, worldId: e.world_id, involvedAgents: e.involved_agents, createdAt: e.created_at })))
         setLoading(false)
@@ -102,6 +104,7 @@ export default function WorldPage() {
           <span className="text-gray-600">|</span>
           <span className="text-gray-400 text-sm">{worldName}</span>
           <span className="bg-green-900 text-green-400 text-xs px-2 py-0.5 rounded font-bold">LIVE</span>
+          <span className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded uppercase tracking-wider">{civStage}</span>
         </div>
         <div className="flex items-center gap-3 text-sm">
           <span className="text-gray-500">Tick <span className="text-green-400 font-bold">{tick}</span></span>

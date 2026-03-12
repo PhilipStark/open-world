@@ -6,7 +6,8 @@ create table if not exists worlds (
   name text not null,
   tick integer not null default 0,
   map_size integer not null default 50,
-  map jsonb, -- Tile[][] stored as JSON
+  map jsonb,
+  civ_state jsonb default '{}', -- CivState: stage, milestones, groups, structures
   created_at timestamptz default now()
 );
 
