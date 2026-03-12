@@ -46,6 +46,21 @@ create index if not exists agents_alive_idx on agents(world_id, alive);
 alter publication supabase_realtime add table agents;
 alter publication supabase_realtime add table world_events;
 
+-- Agent Connections (OpenClaw webhooks)
+create table if not exists agent_connections (
+  id uuid primary key default gen_random_uuid(),
+  agent_id text references agents(id) on delete cascade,
+  world_id text references worlds(id) on delete cascade,
+  webhook_url text not null,
+  webhook_secret text,
+  token text not null unique,
+  connected_at timestamptz default now(),
+  last_ping timestamptz
+);
+
+create index if not exists agent_connections_agent_id_idx on agent_connections(agent_id);
+create index if not exists agent_connections_token_idx on agent_connections(token);
+
 -- Helper: get world state
 create or replace function get_world_state(p_world_id text)
 returns jsonb
