@@ -4,10 +4,7 @@ import { AgentDecision } from '../world/types'
 const client = new OpenAI({
   baseURL: process.env.LLM_API_URL || 'https://api.anthropic.com/v1',
   apiKey: process.env.LLM_API_KEY || '',
-  defaultHeaders:
-    process.env.LLM_API_URL?.includes('anthropic')
-      ? { 'anthropic-version': '2023-06-01' }
-      : undefined,
+  defaultHeaders: undefined,
 })
 
 const MODEL = process.env.LLM_MODEL || 'claude-3-5-haiku-20241022'
