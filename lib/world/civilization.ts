@@ -82,10 +82,12 @@ export function stageDescription(stage: CivStage): string {
 }
 
 export function buildAgentSystemPrompt(agent: Agent, civState: CivState, tick: number): string {
-  const stage = civState.stage
+  const stage = civState.stage ?? 'primitive'
   const stageDesc = stageDescription(stage)
-  const group = civState.groups.find(g => g.memberIds.includes(agent.id))
-  const recentMilestones = civState.milestones.slice(-3).map(m => m.description).join('; ')
+  const groups = civState.groups ?? []
+  const milestones = civState.milestones ?? []
+  const group = groups.find(g => g.memberIds?.includes(agent.id))
+  const recentMilestones = milestones.slice(-3).map(m => m.description).join('; ')
 
   return `You are ${agent.name}, a being living in a world called Open World.
 
@@ -130,7 +132,7 @@ export function detectMilestones(
   newEvents: WorldEvent[]
 ): Milestone[] {
   const milestones: Milestone[] = []
-  const existing = new Set(civState.milestones.map(m => m.type))
+  const existing = new Set((civState.milestones ?? []).map(m => m.type))
 
   // First speech
   if (!existing.has('first_speech')) {

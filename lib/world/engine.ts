@@ -23,7 +23,18 @@ export async function runWorldTick(
   state: WorldState,
   map: Tile[][]
 ): Promise<{ newState: WorldState; newEvents: WorldEvent[] }> {
-  const civState: CivState = state.civState ?? defaultCivState()
+  const raw = state.civState ?? {}
+  const civState: CivState = {
+    stage: (raw as any).stage ?? 'primitive',
+    stageSince: (raw as any).stageSince ?? 0,
+    milestones: (raw as any).milestones ?? [],
+    groups: (raw as any).groups ?? [],
+    structures: (raw as any).structures ?? [],
+    population: (raw as any).population ?? 0,
+    totalBorn: (raw as any).totalBorn ?? 0,
+    totalDead: (raw as any).totalDead ?? 0,
+    historyLog: (raw as any).historyLog ?? [],
+  }
   const alive = state.agents.filter(a => a.alive)
 
   console.log(`[Engine] Tick ${state.tick + 1} | Stage: ${civState.stage} | Pop: ${alive.length}`)
